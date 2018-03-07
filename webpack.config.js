@@ -1,26 +1,42 @@
-const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack')
+const path = require('path')
+
+const debug = process.env.NODE_ENV !== 'production'
+const plugins = debug ? [new webpack.HotModuleReplacementPlugin()] : []
+
 
 module.exports = {
-    mode: 'development',
-    entry: './src/index.js',
+    context: __dirname,
+    mode: debug ? 'development' : 'production',
+    entry: ['./src/index.js'],
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'index.js',
+        path: path.resolve(__dirname, 'public'),
+        filename: 'bundle.js',
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
-                use: ['babel-loader'],
+                include: [
+                    path.resolve(__dirname, 'src'),
+                ],
+                exclude: [
+                    path.resolve(__dirname, 'node_modules'),
+                ],
+                loader: 'babel-loader',
             },
             {
                 test: /\.sss$/,
-                use: ExtractTextPlugin.extract(['css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]', 'postcss-loader']),
+                loader: ['style-loader', 'css-loader?modules=true&localIdentName=[name]__[local]!postcss-loader']
             },
         ],
     },
-    plugins: [
-        new ExtractTextPlugin('style.css'),
-    ],
-};
+    devtool: debug ? 'source-map' : 'none',
+    devServer: {
+        port: 3000,
+        hot: debug,
+        open: true,
+        contentBase: path.resolve(__dirname, 'public'),
+    },
+    plugins: plugins,
+}

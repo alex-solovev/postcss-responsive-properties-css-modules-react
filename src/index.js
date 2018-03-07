@@ -1,13 +1,5 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { render } from 'react-dom'
-import styles from './App.sss';
+import App from './App/App'
 
-class App extends Component {
-    render() {
-        return (
-            <div className={styles.container}>App</div>
-        )
-    }
-}
-
-render(<App />, document.getElementById('app'));
+render(<App />, document.querySelector('#app'))
